@@ -1,0 +1,1 @@
+A WordPress plugin to change `<html lang>` per post by custom Taxonomy.
