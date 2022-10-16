@@ -180,7 +180,7 @@ function languageSelector(_ref) {
     slug
   } = _ref;
   const {
-    terms,
+    termIds,
     availableTerms,
     taxonomy,
     hasAssignAction
@@ -197,7 +197,7 @@ function languageSelector(_ref) {
     const _taxonomy = getTaxonomy(slug);
     const post = getCurrentPost();
     return {
-      terms: _taxonomy ? getEditedPostAttribute(_taxonomy.rest_base) : [],
+      termIds: _taxonomy ? getEditedPostAttribute(_taxonomy.rest_base) : [],
       availableTerms: getEntityRecords("taxonomy", slug, DEFAULT_QUERY) || [],
       taxonomy: _taxonomy,
       hasAssignAction: _taxonomy ? (0,lodash__WEBPACK_IMPORTED_MODULE_6__.get)(post, ["_links", "wp:action-assign-" + _taxonomy.rest_base], false) : false
@@ -213,7 +213,6 @@ function languageSelector(_ref) {
 
   // update term for post
   const onUpdateTerm = termId => {
-    console.log("editPost");
     editPost({
       [taxonomy.rest_base]: termId ? [termId] : []
     });
@@ -221,11 +220,10 @@ function languageSelector(_ref) {
 
   // handle for select term
   const onChange = termId => {
-    console.log(termId);
-    termId = termId === "default" ? false : termId;
+    termId = termId === -1 ? false : termId;
     onUpdateTerm(termId);
   };
-  const [termId, setTermId] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(terms[0] || "default");
+  const [termId, setTermId] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(termIds[0] || -1);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
     label: "Language",
     value: termId,
@@ -234,7 +232,7 @@ function languageSelector(_ref) {
       value: term.id
     })), {
       label: "Default",
-      value: "default"
+      value: -1
     }],
     onChange: termId => {
       setTermId(termId);

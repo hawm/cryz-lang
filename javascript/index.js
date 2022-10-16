@@ -15,7 +15,7 @@ const DEFAULT_QUERY = {
 };
 
 function languageSelector({ slug }) {
-  const { terms, availableTerms, taxonomy, hasAssignAction } = useSelect(
+  const { termIds, availableTerms, taxonomy, hasAssignAction } = useSelect(
     (select) => {
       const { getCurrentPost, getEditedPostAttribute } = select(editorStore);
       const { getTaxonomy, getEntityRecords, isResolving } = select(coreStore);
@@ -23,7 +23,7 @@ function languageSelector({ slug }) {
       const post = getCurrentPost();
 
       return {
-        terms: _taxonomy ? getEditedPostAttribute(_taxonomy.rest_base) : [],
+        termIds: _taxonomy ? getEditedPostAttribute(_taxonomy.rest_base) : [],
         availableTerms: getEntityRecords("taxonomy", slug, DEFAULT_QUERY) || [],
         taxonomy: _taxonomy,
         hasAssignAction: _taxonomy
@@ -46,32 +46,30 @@ function languageSelector({ slug }) {
 
   // update term for post
   const onUpdateTerm = (termId) => {
-    console.log("editPost");
     editPost({ [taxonomy.rest_base]: termId ? [termId] : [] });
   };
 
   // handle for select term
   const onChange = (termId) => {
-    console.log(termId);
-    termId = termId === "default" ? false : termId;
+    termId = termId === -1 ? false : termId;
     onUpdateTerm(termId);
   };
 
-  const [termId, setTermId] = useState(terms[0] || "default");
+  const [termId, setTermId] = useState(termIds[0] || -1);
 
   return createElement(SelectControl, {
     label: "Language",
     value: termId,
     options: [
       ...availableTerms.map((term) => ({ label: term.name, value: term.id })),
-      { label: "Default", value: "default" },
+      { label: "Default", value: -1 },
     ],
     onChange: (termId) => {
       setTermId(termId);
       onChange(termId);
     },
     __nextHasNoMarginBottom: true,
-    help: "Select language for post."
+    help: "Select language for post.",
   });
 }
 
